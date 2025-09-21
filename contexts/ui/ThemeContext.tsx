@@ -10,7 +10,7 @@ export interface ThemeContextData {
 }
 
 export const ThemeContext = createContext<ThemeContextData>({
-    theme: 'light',
+    theme: 'dark',
     toggleTheme: () => {},
 });
 

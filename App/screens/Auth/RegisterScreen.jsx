@@ -16,6 +16,7 @@ import { Dropdown } from "react-native-element-dropdown";
 import BackArrow from "../../../assets/icons/arrowBack.svg";
 import CalendarIcon from "../../../assets/icons/calendarIcon";
 import Button from "../../components/button/Button";
+import { LinearGradient } from "expo-linear-gradient";
 
 export const RegisterScreen = ({ navigation }) => {
   const [name, setName] = useState("");
@@ -85,17 +86,25 @@ export const RegisterScreen = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.container}>
-          <View style={styles.topbar}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
+          <LinearGradient
+            colors={["#B22222", "#8B0000"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.topbar}
+          >
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => navigation.goBack()}
+            >
               <BackArrow />
             </TouchableOpacity>
-
-            <Text style={[styles.title, { paddingLeft: "36%" }]}>
-              Criar conta
-            </Text>
-          </View>
+            <View style={styles.titleWrapper}>
+              <Text style={styles.topbarTitle}>Criar conta</Text>
+            </View>
+          </LinearGradient>
 
           <View style={styles.body}>
+
             <View style={styles.titleSection}>
               <Text style={styles.title}> 1. Dados Pessoais</Text>
               <View style={styles.line} />
@@ -309,7 +318,7 @@ export const RegisterScreen = ({ navigation }) => {
             </View>
 
             <View>
-              <Button title="Criar conta" color="#651D1E" navigateTo="Home"/>
+              <Button title="Criar conta" color="#651D1E" navigateTo="Home" />
             </View>
           </View>
         </View>
@@ -333,25 +342,24 @@ const styles = StyleSheet.create({
     padding: 24,
     paddingTop: "15%",
     flexDirection: "row",
-    backgroundColor: "#651D1E",
     alignItems: "center",
   },
 
-  body: {
-    padding: 24,
+  backButton: {
+    width: 40,
+    alignItems: "flex-start",
+    justifyContent: "center",
   },
 
-  titleSection: {
-    flexDirection: "row",
+  titleWrapper: {
+    flex: 1,
     alignItems: "center",
   },
 
-  title: {
+  topbarTitle: {
     color: "white",
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
-    paddingRight: 8,
-    paddingBottom: 18,
   },
 
   subTitle: {
@@ -362,9 +370,29 @@ const styles = StyleSheet.create({
   },
 
   line: {
-    height: 2,
+    height: 1,
     backgroundColor: "#fff",
     width: "60%",
+  },
+
+  body: {
+    padding: 24,
+    // paddingTop: "15%",
+  },
+
+  title: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+    paddingRight: 8,
+    textAlign: "center"
+  },
+
+  titleSection: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 24
   },
 
   inputWrapper: {
