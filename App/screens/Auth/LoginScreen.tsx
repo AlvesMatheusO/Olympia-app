@@ -49,7 +49,7 @@ export const LoginScreen = () => {
         >
           <View style={styles.backInput}>
             <View style={styles.inputWrapper}>
-              <Text style={{ color: "white" }}>Email</Text>
+              <Text style={styles.text}>Email</Text>
               <View style={styles.inputContainer}>
                 <TextInput
                   style={styles.input}
@@ -64,7 +64,7 @@ export const LoginScreen = () => {
             <View style={{ height: 40 }} />
 
             <View style={styles.inputWrapper}>
-              <Text style={{ color: "white" }}>Senha</Text>
+              <Text style={styles.text}>Senha</Text>
               <View style={styles.inputContainer}>
                 <PasswordInput
                   placeholder="Digite sua Senha"
@@ -136,11 +136,18 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingLeft: 16,
     paddingRight: 12,
+    height: 40
   },
 
   input: {
     flex: 1,
     paddingLeft: 16,
+    height: 40
+  },
+
+  text: {
+    fontSize: 16,
+    color: "white"
   },
 
   forgotPassword: {
