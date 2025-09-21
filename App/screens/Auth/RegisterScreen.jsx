@@ -104,7 +104,6 @@ export const RegisterScreen = ({ navigation }) => {
           </LinearGradient>
 
           <View style={styles.body}>
-
             <View style={styles.titleSection}>
               <Text style={styles.title}> 1. Dados Pessoais</Text>
               <View style={styles.line} />
@@ -343,6 +342,8 @@ const styles = StyleSheet.create({
     paddingTop: "15%",
     flexDirection: "row",
     alignItems: "center",
+    borderBottomRightRadius: 24,
+    borderBottomLeftRadius: 24,
   },
 
   backButton: {
@@ -385,14 +386,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     paddingRight: 8,
-    textAlign: "center"
+    textAlign: "center",
   },
 
   titleSection: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 24
+    paddingVertical: 24,
   },
 
   inputWrapper: {
