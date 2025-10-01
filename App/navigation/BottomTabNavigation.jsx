@@ -32,7 +32,7 @@ export default function BottomTabContainer() {
         // Barra “flutuante”
         tabBarStyle: {
           position: "absolute",
-          height: 80,
+          height: 60,
           backgroundColor: "transparent",
           borderTopWidth: 0,
           borderRadius: 24,

@@ -12,7 +12,7 @@ export default function AddRecordBtn({
   rightOffset = 24,
   color = "#B22222",
   tintLabel = "#111827",
-  itemBg = "#ffc1c1ff",
+  itemBg = "#ffbf00ff",
 }) {
   const nav = useNavigation();
   const [open, setOpen] = useState(false);

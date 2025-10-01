@@ -8,6 +8,8 @@ import { RegisterScreen } from "../App/screens/Auth/RegisterScreen";
 import { HomeScreen } from "../App/screens/Home/HomeScreen";
 import { SettingsScreen } from "../App/screens/Settings/SettingsScreen";
 import BottomTabContainer from "../App/navigation/BottomTabNavigation";
+import { NewWorkoutScreen } from "../App/screens/Home/NewWorkout";
+import { CameraScreen } from "../App/screens/Home/CameraGym";
 
 const Stack = createNativeStackNavigator();
 
@@ -29,11 +31,23 @@ export default function Routes() {
           />
 
           <Stack.Screen
+            name="NewWorkout"
+            component={NewWorkoutScreen}
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
             name="Home"
             component={BottomTabContainer}
             options={{ headerShown: false }}
           />
-          
+
+          <Stack.Screen
+            name="Camera"
+            component={CameraScreen}
+            options={{ headerShown: false }}
+          />
+
           <Stack.Screen
             name="Settings"
             component={SettingsScreen}

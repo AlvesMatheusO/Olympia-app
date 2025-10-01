@@ -67,7 +67,7 @@ export const HomeScreen = ({ navigation }) => {
           {
             label: "Adicionar Treino",
             icon: "barbell-outline",
-            route: "HomeScreen",
+            route: "Camera",
           },
           {
             label: "Adicionar Refeição",
@@ -77,7 +77,7 @@ export const HomeScreen = ({ navigation }) => {
         ]}
         bottomOffset={tabBarHeight + 24}
         rightOffset={24}
-        color="#B22222"
+        color="#ffbf00ff"
         tintLabel="#111827"
       />
     </View>

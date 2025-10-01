@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
+
 import DateTimePicker from "@react-native-community/datetimepicker";
 import PasswordInput from "../../components/input/PasswordInput";
 import { Dropdown } from "react-native-element-dropdown";
@@ -17,6 +18,7 @@ import BackArrow from "../../../assets/icons/arrowBack.svg";
 import CalendarIcon from "../../../assets/icons/calendarIcon";
 import Button from "../../components/button/Button";
 import { LinearGradient } from "expo-linear-gradient";
+import DatePickerField from "../../components/input/DatePickerField";
 
 export const RegisterScreen = ({ navigation }) => {
   const [name, setName] = useState("");
@@ -124,24 +126,16 @@ export const RegisterScreen = ({ navigation }) => {
               </View>
             </View>
 
-            <View style={styles.item}>
-              <View style={styles.inputWrapper}>
-                <Text style={styles.subTitle}>Data Nascimento</Text>
-                <View style={styles.inputContainerDate}>
-                  <DateTimePicker
-                    value={birthDate}
-                    mode="date"
-                    display="default"
-                    maximumDate={new Date()}
-                    onChange={handleDateChange}
-                    design="material"
-                  />
-
-                  <View style={{ height: 25, width: 25 }}>
-                    <CalendarIcon />
-                  </View>
-                </View>
-              </View>
+            <View style={styles.inputWrapper}>
+              <DatePickerField
+                label="Data de Nascimento"
+                value={birthDate}
+                maximumDate={new Date()}
+                onChange={(date) => {
+                  setBirthDate(date);
+                  setBirth(date.toLocaleDateString("pt-BR"));
+                }}
+              />
             </View>
 
             <View style={styles.item}>
