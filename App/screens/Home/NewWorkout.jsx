@@ -14,11 +14,14 @@ import DatePickerField from "../../components/input/DatePickerField";
 import { ThemeContext } from "../../../contexts/ui/ThemeContext";
 import { lightTheme, darkTheme } from "../../theme/theme";
 import { useRoute } from "@react-navigation/native";
-
+import { useToast } from "../../hooks/useToast";
 import Topbar from "../../components/topbar/Topbar";
+import Button from "../../components/button/Button";
 
 export const NewWorkoutScreen = ({ navigation }) => {
   const route = useRoute();
+  const { showSuccess, showError, showInfo } = useToast();
+
   const { imageUri } = route.params || {};
   const { theme, toggleTheme } = useContext(ThemeContext);
   const currentTheme = theme === "light" ? lightTheme : darkTheme;
@@ -137,6 +140,15 @@ export const NewWorkoutScreen = ({ navigation }) => {
               />
             </View>
           </View>
+
+          <Button
+            title="Registrar Workout"
+            color="#651D1E"
+            onPress={() => {
+              showSuccess("Sucesso!", "Workout registrado");
+              setTimeout(() => navigation.navigate("Home"), 500);
+            }}
+          />
         </KeyboardAvoidingView>
       </ScrollView>
     </View>

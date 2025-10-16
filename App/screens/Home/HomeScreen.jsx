@@ -36,7 +36,7 @@ export const HomeScreen = ({ navigation }) => {
           <TouchableOpacity
             style={styles.backButton}
             onPress={() => navigation.goBack()}
-          ></TouchableOpacity>
+          />
           <View style={styles.titleWrapper}>
             <Text style={styles.topbarTitle}>Olympia</Text>
           </View>

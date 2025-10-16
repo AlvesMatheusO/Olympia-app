@@ -1,6 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { ToastProvider } from "./App/components/toast/ToastProvider";
 
 import { ThemeProvider } from "./contexts/ui/ThemeContext";
 import { ScreenDimensionsProvider } from "./contexts/ui/screenDimentionsContext";
@@ -12,6 +13,7 @@ export default function App() {
       <ScreenDimensionsProvider>
         <ThemeProvider>
         <Routes />
+        <ToastProvider />
         </ThemeProvider>
       </ScreenDimensionsProvider>
     </View>
