@@ -77,8 +77,8 @@ export const HomeScreen = ({ navigation }) => {
         ]}
         bottomOffset={tabBarHeight + 24}
         rightOffset={24}
-        color="#ffbf00ff"
-        tintLabel="#111827"
+        color="#d53535ff"
+        tintLabel="#FFF"
       />
     </View>
   );
