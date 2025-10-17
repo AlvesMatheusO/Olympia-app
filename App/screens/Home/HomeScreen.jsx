@@ -22,6 +22,30 @@ export const HomeScreen = ({ navigation }) => {
   const isDark = theme === "dark";
 
   const tabBarHeight = useBottomTabBarHeight();
+
+  const feedData = [
+    {
+      id: 1,
+      type: "treino",
+      title: "HIIT Full Body",
+      duration: "30 min",
+      timeLabel: "07:00",
+      description: "Circuito de burpees, air squats e mountain climbers.",
+      imageUri:
+        "https://images.unsplash.com/photo-1546483875-ad9014c88eba?q=80&w=1200&auto=format&fit=crop",
+    },
+    {
+      id: 2,
+      type: "refeicao",
+      title: "Chicken Bowl",
+      calories: 420,
+      timeLabel: "12:30",
+      description: "Grilled chicken, brown rice, avocado e pico de gallo.",
+      imageUri:
+        "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=1200&auto=format&fit=crop",
+    },
+  ];
+
   return (
     <View
       style={[styles.container, { backgroundColor: currentTheme.background }]}
@@ -44,22 +68,25 @@ export const HomeScreen = ({ navigation }) => {
       </View>
 
       <ScrollView contentContainerStyle={styles.body}>
-        <MealCard
-          title="Chicken Bowl"
-          calories={420}
-          timeLabel="12:30 PM"
-          description="Grilled chicken, brown rice, avocado and pico de gallo."
-          imageUri="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=1200&auto=format&fit=crop"
-        />
-
-        <WorkoutCard
-          title="HIIT Full Body"
-          duration="30 min"
-          timeLabel="7:00 AM"
-          description="Circuito de burpees, air squats, mountain climbers e sprints. Intensidade alta."
-          imageUri="https://images.unsplash.com/photo-1546483875-ad9014c88eba?q=80&w=1200&auto=format&fit=crop"
-          onPress={() => navigation.navigate("WorkoutScreen", { id: 2 })}
-        />
+        {feedData.length > 0 ? (
+          feedData.map((item) =>
+            item.type === "treino" ? (
+              <WorkoutCard
+                key={item.id}
+                {...item}
+                onPress={() =>
+                  navigation.navigate("WorkoutScreen", { id: item.id })
+                }
+              />
+            ) : (
+              <MealCard key={item.id} {...item} />
+            )
+          )
+        ) : (
+          <Text style={{ color: "#888", textAlign: "center", marginTop: 40 }}>
+            Nenhum treino ou refeição registrada ainda.
+          </Text>
+        )}
       </ScrollView>
 
       <AddRecordBtn
@@ -68,13 +95,13 @@ export const HomeScreen = ({ navigation }) => {
             label: "Adicionar Treino",
             icon: "barbell-outline",
             route: "Camera",
-            params: { type: "treino" }
+            params: { type: "treino" },
           },
           {
             label: "Adicionar Refeição",
             icon: "restaurant-outline",
             route: "Camera",
-            params: { type: "refeicao" }
+            params: { type: "refeicao" },
           },
         ]}
         bottomOffset={tabBarHeight + 24}
