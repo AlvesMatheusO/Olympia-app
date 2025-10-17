@@ -68,11 +68,13 @@ export const HomeScreen = ({ navigation }) => {
             label: "Adicionar Treino",
             icon: "barbell-outline",
             route: "Camera",
+            params: { type: "treino" }
           },
           {
             label: "Adicionar Refeição",
             icon: "restaurant-outline",
-            route: "SettingsScreen",
+            route: "Camera",
+            params: { type: "refeicao" }
           },
         ]}
         bottomOffset={tabBarHeight + 24}

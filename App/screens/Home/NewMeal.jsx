@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+
 import {
   View,
   Text,
@@ -12,26 +13,27 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
+
 import DatePickerField from "../../components/input/DatePickerField";
+import TimePickerField from "../../components/input/TimePickerField";
 import { ThemeContext } from "../../../contexts/ui/ThemeContext";
 import { lightTheme, darkTheme } from "../../theme/theme";
 import { useRoute } from "@react-navigation/native";
 import { useToast } from "../../hooks/useToast";
 import Topbar from "../../components/topbar/Topbar";
 import Button from "../../components/button/Button";
+import { Dropdown } from "react-native-element-dropdown";
 
-export const NewWorkoutScreen = ({ navigation }) => {
+export const newMealScreen = ({ navigation }) => {
   const route = useRoute();
   const { imageUri } = route.params || {};
 
+  const [mealTime, setMealTime] = useState(new Date());
   const [formData, setFormData] = useState({
-    title: "",
-    category: "",
-    effortLevel: "",
-    calories: "",
-    description: "",
-    workoutDate: new Date(),
-    workoutDateFormatted: "",
+    horario: "",
+    data: "",
+    descricao: "",
+    tipo: "",
     image: imageUri,
   });
 
@@ -53,10 +55,16 @@ export const NewWorkoutScreen = ({ navigation }) => {
   };
 
   const handleSubmit = () => {
-    showSuccess("Sucesso!", "Workout registrado");
+    showSuccess("Sucesso!", "Refeição registrada");
     console.log("Dados enviados:", formData);
     setTimeout(() => navigation.navigate("Home"), 1000);
   };
+
+  const dataTypeMeal = [
+    { label: "Dieta", value: "dieta" },
+    { label: "Refeição livre", value: "livre" },
+    { label: "Refeição Intuitiva", value: "intuitiva" },
+  ];
 
   return (
     <KeyboardAvoidingView
@@ -67,7 +75,7 @@ export const NewWorkoutScreen = ({ navigation }) => {
       <View
         style={[styles.container, { backgroundColor: currentTheme.background }]}
       >
-        <Topbar title="Adicionar Workout" navigation={navigation} />
+        <Topbar navigation={navigation} title="Adicionar Refeição" />
 
         <ScrollView contentContainerStyle={styles.body}>
           {/* Título */}
@@ -76,7 +84,7 @@ export const NewWorkoutScreen = ({ navigation }) => {
             <View style={styles.inputContainer}>
               <TextInput
                 style={styles.input}
-                placeholder="Digite o nome do exercício"
+                placeholder="Digite o nome da"
                 value={formData.title}
                 onChangeText={(text) => setField("title", text)}
               />
@@ -86,34 +94,34 @@ export const NewWorkoutScreen = ({ navigation }) => {
           {/* Data */}
 
           <DatePickerField
-            label="Data de Treino"
+            label="Data da Refeição"
             value={formData.workoutDate}
             maximumDate={new Date()}
             onChange={handleDateChange}
           />
 
-          {/* Categoria */}
+          <TimePickerField
+            label="Horário da Refeição"
+            value={mealTime}
+            onChange={(time) => setMealTime(time)}
+          />
+          
+          {/* Tipo de refeição */}
           <View style={styles.item}>
-            <Text style={styles.subTitle}>Categoria</Text>
+            <Text style={styles.subTitle}>Tipo de Refeição</Text>
             <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.input}
-                placeholder="Ex: Força, Cardio..."
-                value={formData.category}
-                onChangeText={(text) => setField("category", text)}
-              />
-            </View>
-          </View>
-
-          {/* Esforço */}
-          <View style={styles.item}>
-            <Text style={styles.subTitle}>Nível de Esforço</Text>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.input}
-                placeholder="Leve, moderado, intenso..."
-                value={formData.effortLevel}
-                onChangeText={(text) => setField("effortLevel", text)}
+              <Dropdown
+                style={styles.inputContainer}
+                placeholderStyle={styles.placeholderStyle}
+                selectedTextStyle={styles.selectedTextStyle}
+                data={dataTypeMeal}
+                labelField="label"
+                valueField="value"
+                placeholder="Selecione o tipo de Refeição"
+                value={formData.tipo}
+                onChange={(item) => {
+                  setField(item);
+                }}
               />
             </View>
           </View>
@@ -124,7 +132,7 @@ export const NewWorkoutScreen = ({ navigation }) => {
             <View style={styles.inputContainer}>
               <TextInput
                 style={styles.input}
-                placeholder="Insira as calorias estimadas no seu Wearable"
+                placeholder="Insira as calorias estimadas da sua refeição"
                 value={formData.calories}
                 onChangeText={(text) => setField("calories", text)}
               />
@@ -149,15 +157,15 @@ export const NewWorkoutScreen = ({ navigation }) => {
           {/* Imagem */}
           {imageUri && (
             <View style={styles.item}>
-              <Text style={styles.subTitle}>Registro de Treino</Text>
+              <Text style={styles.subTitle}>Registro de Refeição</Text>
               <Image source={{ uri: imageUri }} style={styles.imagePreview} />
             </View>
           )}
 
           {/* Botão */}
           <Button
-            title="Registrar Workout"
-            color="#651D1E"
+            title="Registrar Refeição"
+            color="#006400"
             onPress={handleSubmit}
           />
         </ScrollView>

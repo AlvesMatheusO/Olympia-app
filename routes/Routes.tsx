@@ -9,7 +9,8 @@ import { HomeScreen } from "../App/screens/Home/HomeScreen";
 import { SettingsScreen } from "../App/screens/Settings/SettingsScreen";
 import BottomTabContainer from "../App/navigation/BottomTabNavigation";
 import { NewWorkoutScreen } from "../App/screens/Home/NewWorkout";
-import { CameraScreen } from "../App/screens/Home/CameraGym";
+import { CameraScreen } from "../App/screens/Home/CameraScreen";
+import { newMealScreen } from "../App/screens/Home/NewMeal";
 
 const Stack = createNativeStackNavigator();
 
@@ -33,6 +34,12 @@ export default function Routes() {
           <Stack.Screen
             name="NewWorkout"
             component={NewWorkoutScreen}
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
+            name="NewMeal"
+            component={newMealScreen}
             options={{ headerShown: false }}
           />
 
