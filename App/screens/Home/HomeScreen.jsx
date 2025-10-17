@@ -23,14 +23,15 @@ export const HomeScreen = ({ navigation }) => {
 
   const tabBarHeight = useBottomTabBarHeight();
 
-  const feedData = [
+  const mockApiResponse = [
     {
       id: 1,
       type: "treino",
       title: "HIIT Full Body",
       duration: "30 min",
       timeLabel: "07:00",
-      description: "Circuito de burpees, air squats e mountain climbers.",
+      description:
+        "Circuito de burpees, air squats, mountain climbers e sprints. Intensidade alta.",
       imageUri:
         "https://images.unsplash.com/photo-1546483875-ad9014c88eba?q=80&w=1200&auto=format&fit=crop",
     },
@@ -40,9 +41,32 @@ export const HomeScreen = ({ navigation }) => {
       title: "Chicken Bowl",
       calories: 420,
       timeLabel: "12:30",
-      description: "Grilled chicken, brown rice, avocado e pico de gallo.",
+      description:
+        "Grilled chicken, brown rice, avocado e pico de gallo. Refeição leve e rica em proteínas.",
       imageUri:
         "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=1200&auto=format&fit=crop",
+    },
+    {
+      id: 3,
+      type: "treino",
+      title: "Corrida Intervalada",
+      duration: "45 min",
+      timeLabel: "18:00",
+      description:
+        "Treino de corrida intervalada com foco em resistência e controle de ritmo.",
+      imageUri:
+        "https://images.unsplash.com/photo-157101u9613914-85f342c7e95e?q=80&w=1200&auto=format&fit=crop",
+    },
+    {
+      id: 4,
+      type: "refeicao",
+      title: "Smoothie Verde",
+      calories: 250,
+      timeLabel: "08:00",
+      description:
+        "Smoothie de couve, maçã, banana e gengibre. Ideal para começar o dia com energia.",
+      imageUri:
+        "https://images.unsplash.com/photo-1572441710534-680c5298e9f8?q=80&w=1200&auto=format&fit=crop",
     },
   ];
 
@@ -68,20 +92,21 @@ export const HomeScreen = ({ navigation }) => {
       </View>
 
       <ScrollView contentContainerStyle={styles.body}>
-        {feedData.length > 0 ? (
-          feedData.map((item) =>
-            item.type === "treino" ? (
-              <WorkoutCard
+        {mockApiResponse.length > 0 ? (
+          mockApiResponse.map((item) => {
+            const targetRoute =
+              item.type === "treino" ? "WorkoutDetails" : "MealDetails";
+            const CardComponent =
+              item.type === "treino" ? WorkoutCard : MealCard;
+
+            return (
+              <CardComponent
                 key={item.id}
                 {...item}
-                onPress={() =>
-                  navigation.navigate("WorkoutScreen", { id: item.id })
-                }
+                onPress={() => navigation.navigate(targetRoute, { item })}
               />
-            ) : (
-              <MealCard key={item.id} {...item} />
-            )
-          )
+            );
+          })
         ) : (
           <Text style={{ color: "#888", textAlign: "center", marginTop: 40 }}>
             Nenhum treino ou refeição registrada ainda.
@@ -129,6 +154,7 @@ const styles = StyleSheet.create({
 
   body: {
     paddingTop: 20,
+    paddingBottom: 100,
   },
 
   backButton: {

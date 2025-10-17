@@ -11,6 +11,8 @@ import BottomTabContainer from "../App/navigation/BottomTabNavigation";
 import { NewWorkoutScreen } from "../App/screens/Home/NewWorkout";
 import { CameraScreen } from "../App/screens/Home/CameraScreen";
 import { newMealScreen } from "../App/screens/Home/NewMeal";
+import { WorkoutDetailsScreen } from "../App/screens/Home/WorkoutDetailsScreen";
+import { MealDetailsScreen } from "../App/screens/Home/MealDetailsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -46,6 +48,18 @@ export default function Routes() {
           <Stack.Screen
             name="Home"
             component={BottomTabContainer}
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
+            name="WorkoutDetails"
+            component={WorkoutDetailsScreen}
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
+            name="MealDetails"
+            component={MealDetailsScreen}
             options={{ headerShown: false }}
           />
 

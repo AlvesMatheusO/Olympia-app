@@ -105,7 +105,7 @@ export const newMealScreen = ({ navigation }) => {
             value={mealTime}
             onChange={(time) => setMealTime(time)}
           />
-          
+
           {/* Tipo de refeição */}
           <View style={styles.item}>
             <Text style={styles.subTitle}>Tipo de Refeição</Text>
