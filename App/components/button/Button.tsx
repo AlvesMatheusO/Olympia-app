@@ -6,7 +6,7 @@ type ButtonProps = {
   title: string;
   color: string;
   onPress?: () => void;
-  navigateTo: string;
+  navigateTo?: string;
 };
 
 export default function Button({
