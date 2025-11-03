@@ -23,7 +23,8 @@ export default function Routes() {
     <View style={styles.container}>
       <NavigationContainer>
         {/* Esta linha força o app a sempre começar na tela de Login */}
-        <Stack.Navigator initialRouteName="Login">
+        {/* mudar para Login */}
+        <Stack.Navigator initialRouteName="Home">
           {/* Telas de Autenticação */}
           <Stack.Screen
             name="Login"

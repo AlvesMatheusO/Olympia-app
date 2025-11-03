@@ -7,7 +7,8 @@
 export const lightTheme = {
   background: "#000",
   tabBarBackground: "#121212",
-  cardBackground: "#1E1E1E",
+  cardBackground: "#4f0606",
+  secondCardBack: "#064f2c",
   subBackground: "#1E1E1E",
   text: "#E0E0E0",
   primary: "#F64783",
@@ -16,7 +17,8 @@ export const lightTheme = {
 export const darkTheme = {
   background: "#000",
   tabBarBackground: "#121212",
-  cardBackground: "#1E1E1E",
+  cardBackground: "#e54180ff",
+  secondCardBack: "#1dbc6fff",
   subBackground: "#1E1E1E",
   text: "#E0E0E0",
   primary: "#F64783",
