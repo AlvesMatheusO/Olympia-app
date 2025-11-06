@@ -7,6 +7,7 @@ import { HomeScreen } from "../screens/Home/HomeScreen";
 import { SettingsScreen } from "../screens/Settings/SettingsScreen";
 import { ProgressScreen } from "../screens/Home/ProgressScreen";
 import { WorkoutScreen } from "../screens/Home/WorkoutTabScreen";
+import { MealTabScreen } from "../screens/Home/MealTabScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -102,7 +103,7 @@ export default function BottomTabContainer() {
 
       <Tab.Screen
         name="MealScreen"
-        component={SettingsScreen}
+        component={MealTabScreen}
         options={{
           tabBarLabel: "Refeições",
           tabBarIcon: ({ color, focused }) => (

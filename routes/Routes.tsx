@@ -12,6 +12,7 @@ import { NewWorkoutScreen } from "../App/screens/Home/NewWorkout";
 import { CameraScreen } from "../App/screens/Home/CameraScreen";
 import { NewMealScreen } from "../App/screens/Home/NewMeal";
 import { WorkoutScreen } from "../App/screens/Home/WorkoutTabScreen";
+import { MealTabScreen } from "../App/screens/Home/MealTabScreen";
 import { WorkoutDetailsScreen } from "../App/screens/Home/WorkoutDetailsScreen";
 import { MealDetailsScreen } from "../App/screens/Home/MealDetailsScreen";
 
@@ -80,7 +81,11 @@ export default function Routes() {
             component={WorkoutScreen}
             options={{ headerShown: false }}
           />
-
+          <Stack.Screen
+            name="Meal"
+            component={MealTabScreen}
+            options={{ headerShown: false }}
+          />
           <Stack.Screen
             name="Settings"
             component={SettingsScreen}

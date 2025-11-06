@@ -7,29 +7,36 @@ import {
     ScrollView
 } from "react-native";
 
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { ThemeContext } from "../../../contexts/ui/ThemeContext";
 import { lightTheme, darkTheme } from "../../theme/theme";
 import { LinearGradient } from "expo-linear-gradient";
-import WeekCalendar from "../../components/calendar/WeekCalendar";
 
-export const WorkoutScreen = () => {
+export const MealTabScreen = () => {
 
     const { theme } = useContext(ThemeContext);
     const currentTheme = theme === "light" ? lightTheme : darkTheme;
 
     return (
-        <ScrollView style={[{backgroundColor: currentTheme.background}, styles.container]}>
-
-            <WeekCalendar checkedDays={["Seg", "Qua", "Sex"]} />
-            
+        <ScrollView style={[{ backgroundColor: currentTheme.background }, styles.container]}>
             <View style={styles.header}>
-                <Text style={styles.title}>Seu treino de hoje!</Text>
+                <Ionicons
+                    name="restaurant-outline"
+                    size={22}
+                    color="white"
+                />
+                <Text style={styles.title}>Suas refeições de hoje</Text>
+            </View>
+
+            <View>
+                    
             </View>
         </ScrollView>
     )
 }
 
 const styles = StyleSheet.create({
+
     container: {
         flex: 1,
         paddingHorizontal: 24,
@@ -37,7 +44,7 @@ const styles = StyleSheet.create({
     },
 
     header: {
-        paddingTop: 50
+        flexDirection: "row", gap: 15
     },
 
     title: {
@@ -45,10 +52,4 @@ const styles = StyleSheet.create({
         color: "#FFF",
         paddingBottom: 15,
     },
-
-    subtitle: {
-         fontSize: 18,
-        color: "#FFF",
-     
-    }
 });
