@@ -24,7 +24,7 @@ import Topbar from "../../components/topbar/Topbar";
 import Button from "../../components/button/Button";
 import { Dropdown } from "react-native-element-dropdown";
 
-export const newMealScreen = ({ navigation }) => {
+export const NewMealScreen = ({ navigation }) => {
   const route = useRoute();
   const { imageUri } = route.params || {};
 

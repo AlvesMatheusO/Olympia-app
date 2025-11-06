@@ -6,6 +6,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { HomeScreen } from "../screens/Home/HomeScreen";
 import { SettingsScreen } from "../screens/Settings/SettingsScreen";
 import { ProgressScreen } from "../screens/Home/ProgressScreen";
+import { WorkoutScreen } from "../screens/Home/WorkoutTabScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -84,7 +85,7 @@ export default function BottomTabContainer() {
 
       <Tab.Screen
         name="WorkoutScreen"
-        component={SettingsScreen}
+        component={WorkoutScreen}
         options={{
           tabBarLabel: "Treinos",
           tabBarIcon: ({ color, focused }) => (

@@ -10,7 +10,8 @@ import { SettingsScreen } from "../App/screens/Settings/SettingsScreen";
 import BottomTabContainer from "../App/navigation/BottomTabNavigation";
 import { NewWorkoutScreen } from "../App/screens/Home/NewWorkout";
 import { CameraScreen } from "../App/screens/Home/CameraScreen";
-import { newMealScreen } from "../App/screens/Home/NewMeal";
+import { NewMealScreen } from "../App/screens/Home/NewMeal";
+import { WorkoutScreen } from "../App/screens/Home/WorkoutTabScreen";
 import { WorkoutDetailsScreen } from "../App/screens/Home/WorkoutDetailsScreen";
 import { MealDetailsScreen } from "../App/screens/Home/MealDetailsScreen";
 
@@ -24,7 +25,7 @@ export default function Routes() {
       <NavigationContainer>
         {/* Esta linha força o app a sempre começar na tela de Login */}
         {/* mudar para Login */}
-        <Stack.Navigator initialRouteName="Login">
+        <Stack.Navigator initialRouteName="Home">
           {/* Telas de Autenticação */}
           <Stack.Screen
             name="Login"
@@ -53,7 +54,7 @@ export default function Routes() {
 
           <Stack.Screen
             name="NewMeal"
-            component={newMealScreen}
+            component={NewMealScreen}
             options={{ headerShown: false }}
           />
 
@@ -72,6 +73,11 @@ export default function Routes() {
           <Stack.Screen
             name="Camera"
             component={CameraScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Workout"
+            component={WorkoutScreen}
             options={{ headerShown: false }}
           />
 
