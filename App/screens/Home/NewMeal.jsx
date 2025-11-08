@@ -1,5 +1,4 @@
 import React, { useContext, useState } from "react";
-
 import {
   View,
   Text,
@@ -10,8 +9,8 @@ import {
   KeyboardAvoidingView,
   Image,
   Platform,
-  Keyboard,
-  TouchableWithoutFeedback,
+  Alert, // Adicionado
+  ActivityIndicator, // Adicionado
 } from "react-native";
 
 import DatePickerField from "../../components/input/DatePickerField";
@@ -21,51 +20,137 @@ import { lightTheme, darkTheme } from "../../theme/theme";
 import { useRoute } from "@react-navigation/native";
 import { useToast } from "../../hooks/useToast";
 import Topbar from "../../components/topbar/Topbar";
-import Button from "../../components/button/Button";
+// import Button from "../../components/button/Button"; // Usando TouchableOpacity
 import { Dropdown } from "react-native-element-dropdown";
+
+// Importar o AuthContext e a URL da API
+import { useAuth, API_BASE_URL } from "../../../contexts/auth/AuthContext";
 
 export const newMealScreen = ({ navigation }) => {
   const route = useRoute();
   const { imageUri } = route.params || {};
 
+  // --- Estados ---
+  const [mealDate, setMealDate] = useState(new Date());
   const [mealTime, setMealTime] = useState(new Date());
+
   const [formData, setFormData] = useState({
-    horario: "",
-    data: "",
+    // titulo: "", // Removido
     descricao: "",
-    tipo: "",
+    tipo: null, // Dropdown (era 'titulo' antes)
+    calorias: "", // Alterado de 'calorias_estimadas'
     image: imageUri,
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+  const { accessToken } = useAuth(); // Pegar o token
+  const { theme } = useContext(ThemeContext);
+  const currentTheme = theme === "light" ? lightTheme : darkTheme;
+  const { showSuccess, showError } = useToast();
+
+  const formatISODate = (date) => {
+    return date.toISOString().split("T")[0];
+  };
+
+  // Pega HH:mm:ss do objeto Date
+  const formatISOTime = (date) => {
+    return date.toTimeString().split(" ")[0];
+  };
+
+  // --- Funções ---
+
+  // Handler genérico para campos de texto
   const setField = (key, value) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
-  const { theme, toggleTheme } = useContext(ThemeContext);
-  const currentTheme = theme === "light" ? lightTheme : darkTheme;
-  const { showSuccess, showError, showInfo } = useToast();
-  const isDark = theme === "dark";
+  // Handler para o Dropdown (novo 'tipo')
+  const handleDropdownChange = (item) => {
+    setFormData((prev) => ({ ...prev, tipo: item.value }));
+  };
 
-  const handleDateChange = (event, selectedDate) => {
-    if (selectedDate) {
-      const formattedDate = selectedDate.toLocaleDateString("pt-BR");
-      setField("workoutDate", selectedDate);
-      setField("workoutDateFormatted", formattedDate);
+  // Handler para o envio
+  const handleSubmit = async () => {
+    setIsLoading(true);
+
+    if (!accessToken) {
+      showError("Erro", "Você não está autenticado.");
+      setIsLoading(false);
+      return;
+    }
+
+    // Validação
+    if (!formData.tipo) {
+      showError("Erro", "Por favor, selecione o tipo de refeição.");
+      setIsLoading(false);
+      return;
+    }
+
+    // 1. Criar o FormData
+    const data = new FormData();
+
+    // 2. Adicionar os campos de texto
+    // (Os nomes DEVEM bater com o serializer do Django)
+    data.append("tipo", formData.tipo); // 'CAFE', 'ALMOCO', 'LANCHE', 'JANTAR'
+    data.append("descricao", formData.descricao);
+    data.append("calorias", formData.calorias || 0); // Alterado
+
+    // Formatar data e hora
+    data.append("data", formatISODate(mealDate));
+    data.append("horario", formatISOTime(mealTime));
+
+    // 3. Adicionar a imagem (se existir)
+    if (imageUri) {
+      const filename = imageUri.split("/").pop();
+      const match = /\.(\w+)$/.exec(filename);
+      const type = match ? `image/${match[1]}` : `image/jpeg`;
+
+      // 'imgField' é o nome que o backend espera
+      data.append("imgField", {
+        uri: Platform.OS === "ios" ? imageUri.replace("file://", "") : imageUri,
+        name: filename,
+        type: type,
+      });
+    }
+
+    // 4. Enviar a requisição
+    try {
+      const response = await fetch(`${API_BASE_URL}api/meals/`, { // Rota de Refeições
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          // Não definir 'Content-Type', o fetch faz isso
+        },
+        body: data,
+      });
+
+      if (response.ok) {
+        setIsLoading(false);
+        showSuccess("Sucesso!", "Refeição registrada");
+        console.log("Refeição enviada com sucesso");
+        setTimeout(() => navigation.navigate("Home"), 1000);
+      } else {
+        setIsLoading(false);
+        const errorData = await response.json();
+        console.error("Erro ao registrar refeição:", errorData);
+        showError("Erro", "Não foi possível registrar a refeição.");
+      }
+    } catch (e) {
+      setIsLoading(false);
+      console.error("Erro de rede:", e);
+      showError("Erro de Rede", "Não foi possível conectar ao servidor.");
     }
   };
 
-  const handleSubmit = () => {
-    showSuccess("Sucesso!", "Refeição registrada");
-    console.log("Dados enviados:", formData);
-    setTimeout(() => navigation.navigate("Home"), 1000);
-  };
-
-  const dataTypeMeal = [
-    { label: "Dieta", value: "dieta" },
-    { label: "Refeição livre", value: "livre" },
-    { label: "Refeição Intuitiva", value: "intuitiva" },
+  // --- ATUALIZADO: Dados do Dropdown (baseado nos Choices do Model) ---
+  const dataTipoRefeicao = [
+    { label: "Café da Manhã", value: "CAFE" },
+    { label: "Almoço", value: "ALMOCO" },
+    { label: "Lanche", value: "LANCHE" },
+    { label: "Jantar", value: "JANTAR" },
   ];
 
+  // --- Renderização ---
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -77,54 +162,40 @@ export const newMealScreen = ({ navigation }) => {
       >
         <Topbar navigation={navigation} title="Adicionar Refeição" />
 
-        <ScrollView contentContainerStyle={styles.body}>
-          {/* Título */}
+        <ScrollView
+          contentContainerStyle={styles.body}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* Título (AGORA É O DROPDOWN 'TIPO') */}
           <View style={styles.item}>
-            <Text style={styles.subTitle}>Título</Text>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.input}
-                placeholder="Digite o nome da"
-                value={formData.title}
-                onChangeText={(text) => setField("title", text)}
-              />
-            </View>
+            <Text style={styles.subTitle}>Tipo de Refeição</Text>
+            <Dropdown
+              style={styles.inputContainer}
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={styles.selectedTextStyle}
+              data={dataTipoRefeicao} // <-- Dados atualizados
+              labelField="label"
+              valueField="value"
+              placeholder="Selecione o tipo de Refeição"
+              value={formData.tipo}
+              onChange={handleDropdownChange} // <-- Handler atualizado
+            />
           </View>
 
           {/* Data */}
-
           <DatePickerField
             label="Data da Refeição"
-            value={formData.workoutDate}
+            value={mealDate}
             maximumDate={new Date()}
-            onChange={handleDateChange}
+            onChange={(event, date) => date && setMealDate(date)} // Simplificado
           />
 
+          {/* Horário */}
           <TimePickerField
             label="Horário da Refeição"
             value={mealTime}
-            onChange={(time) => setMealTime(time)}
+            onChange={(event, time) => time && setMealTime(time)} // Simplificado
           />
-
-          {/* Tipo de refeição */}
-          <View style={styles.item}>
-            <Text style={styles.subTitle}>Tipo de Refeição</Text>
-            <View style={styles.inputContainer}>
-              <Dropdown
-                style={styles.inputContainer}
-                placeholderStyle={styles.placeholderStyle}
-                selectedTextStyle={styles.selectedTextStyle}
-                data={dataTypeMeal}
-                labelField="label"
-                valueField="value"
-                placeholder="Selecione o tipo de Refeição"
-                value={formData.tipo}
-                onChange={(item) => {
-                  setField(item);
-                }}
-              />
-            </View>
-          </View>
 
           {/* Calorias */}
           <View style={styles.item}>
@@ -132,9 +203,11 @@ export const newMealScreen = ({ navigation }) => {
             <View style={styles.inputContainer}>
               <TextInput
                 style={styles.input}
-                placeholder="Insira as calorias estimadas da sua refeição"
-                value={formData.calories}
-                onChangeText={(text) => setField("calories", text)}
+                placeholder="Insira as calorias estimadas"
+                value={formData.calorias}
+                onChangeText={(text) => setField("calorias", text)} // 'calorias'
+                keyboardType="numeric"
+                placeholderTextColor="#888"
               />
             </View>
           </View>
@@ -145,11 +218,11 @@ export const newMealScreen = ({ navigation }) => {
             <View style={styles.inputContainerDesc}>
               <TextInput
                 style={styles.inputDesc}
-                placeholder="Descreva o treino..."
-                value={formData.description}
-                onChangeText={(text) => setField("description", text)}
+                placeholder="Descreva sua refeição..."
+                value={formData.descricao}
+                onChangeText={(text) => setField("descricao", text)}
                 multiline
-                textAlignVertical="top"
+                placeholderTextColor="#888"
               />
             </View>
           </View>
@@ -163,114 +236,73 @@ export const newMealScreen = ({ navigation }) => {
           )}
 
           {/* Botão */}
-          <Button
-            title="Registrar Refeição"
-            color="#006400"
+          <TouchableOpacity
+            style={[
+              styles.buttonContainer,
+              isLoading && styles.buttonDisabled,
+            ]}
             onPress={handleSubmit}
-          />
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Text style={styles.buttonText}>Registrar Refeição</Text>
+            )}
+          </TouchableOpacity>
         </ScrollView>
       </View>
     </KeyboardAvoidingView>
   );
 };
 
+// --- Estilos ---
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-
-  topbar: {
-    padding: 24,
-    paddingTop: "15%",
-    flexDirection: "row",
-    alignItems: "center",
-    borderBottomRightRadius: 24,
-    borderBottomLeftRadius: 24,
+  body: {
+    paddingTop: 20,
+    paddingHorizontal: 24,
   },
-
-  title: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-    paddingRight: 8,
-    textAlign: "center",
-  },
-
   subTitle: {
     color: "white",
     fontSize: 16,
     paddingRight: 8,
     paddingBottom: 4,
   },
-
-  body: {
-    paddingTop: 20,
-    paddingHorizontal: 24,
+  item: {
+    paddingBottom: 18,
   },
-
-  backButton: {
-    width: 40,
-    alignItems: "flex-start",
-    justifyContent: "center",
-  },
-
-  titleWrapper: {
-    flex: 1,
-  },
-
-  topbarTitle: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-
   inputContainer: {
     backgroundColor: "#EDEDED",
     flexDirection: "row",
     alignItems: "center",
     borderRadius: 10,
-    paddingLeft: 16,
-    paddingRight: 12,
-    height: 40,
+    paddingHorizontal: 16, // Padding horizontal
+    height: 48,
   },
-
-  inputContainerDesc: {
-    backgroundColor: "#EDEDED",
-    flexDirection: "row",
-    borderRadius: 10,
-    paddingLeft: 16,
-    paddingRight: 12,
-    height: 100,
-  },
-
-  inputContainerDate: {
-    backgroundColor: "#EDEDED",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderRadius: 10,
-    paddingLeft: 16,
-    paddingRight: 12,
-    height: 40,
-  },
-
   input: {
     flex: 1,
-    paddingLeft: 16,
-    height: 40,
+    height: "100%",
     width: "100%",
+    fontSize: 16,
+    color: "black", // Cor do texto
   },
-
+  inputContainerDesc: {
+    backgroundColor: "#EDEDED",
+    borderRadius: 10,
+    paddingHorizontal: 16,
+    height: 100,
+    paddingVertical: 10, // Padding vertical para multiline
+  },
   inputDesc: {
-    paddingLeft: 16,
-    height: 80,
+    height: "100%",
     width: "100%",
+    fontSize: 16,
+    color: "black",
+    textAlignVertical: "top",
   },
-
-  item: {
-    paddingBottom: 18,
-  },
-
   imagePreview: {
     width: 120,
     height: 120,
@@ -279,5 +311,32 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     marginTop: 8,
     alignSelf: "flex-start",
+  },
+  // Estilos do Dropdown
+  placeholderStyle: {
+    fontSize: 16,
+    color: "#888",
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+    color: "black",
+  },
+  // Estilos do Botão
+  buttonContainer: {
+    backgroundColor: "#006400", // Cor verde
+    borderRadius: 10,
+    padding: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 24,
+    marginBottom: 48, // Margem inferior
+  },
+  buttonDisabled: {
+    backgroundColor: "#999",
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });
