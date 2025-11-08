@@ -62,7 +62,12 @@ export default function PasswordRecoveryFlow() {
 
           <TouchableOpacity
             style={styles.secondaryButton}
-            onPress={() => setStep(1)}
+            onPress={() =>
+              navigation.reset({
+                index: 0,
+                routes: [{ name: "Login" }],
+              })
+            }
             activeOpacity={0.7}
           >
             <Text style={styles.secondaryButtonText}>Voltar ao Login</Text>
