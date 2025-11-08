@@ -5,7 +5,7 @@
 // primary: '#F64783',
 // secondary: '#CCE5DD',
 export const lightTheme = {
-  background: "#000",
+  background: "#0f1419",
   tabBarBackground: "#121212",
   cardBackground: "#4f0606",
   secondCardBack: "#064f2c",
@@ -15,7 +15,7 @@ export const lightTheme = {
   secondary: "#4AAFA9",
 };
 export const darkTheme = {
-  background: "#000",
+  background: "#0f1419",
   tabBarBackground: "#121212",
   cardBackground: "#e54180ff",
   secondCardBack: "#1dbc6fff",

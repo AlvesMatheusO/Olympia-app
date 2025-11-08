@@ -26,7 +26,7 @@ import { Dropdown } from "react-native-element-dropdown";
 // Importar o AuthContext e a URL da API
 import { useAuth, API_BASE_URL } from "../../../contexts/auth/AuthContext";
 
-export const newMealScreen = ({ navigation }) => {
+export const NewMealScreen = ({ navigation }) => {
   const route = useRoute();
   const { imageUri } = route.params || {};
 

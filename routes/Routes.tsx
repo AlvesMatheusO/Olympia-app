@@ -6,11 +6,14 @@ import React from "react"; // Necessário para JSX
 //Screens:
 import { LoginScreen } from "../App/screens/Auth/LoginScreen";
 import { RegisterScreen } from "../App/screens/Auth/RegisterScreen";
+import PasswordRecoveryFlow from "../App/screens/Auth/ForgotPassword";
 import { SettingsScreen } from "../App/screens/Settings/SettingsScreen";
 import BottomTabContainer from "../App/navigation/BottomTabNavigation";
 import { NewWorkoutScreen } from "../App/screens/Home/NewWorkout";
 import { CameraScreen } from "../App/screens/Home/CameraScreen";
-import { newMealScreen } from "../App/screens/Home/NewMeal";
+import { NewMealScreen } from "../App/screens/Home/NewMeal";
+import { WorkoutScreen } from "../App/screens/Home/WorkoutTabScreen";
+import { MealTabScreen } from "../App/screens/Home/MealTabScreen";
 import { WorkoutDetailsScreen } from "../App/screens/Home/WorkoutDetailsScreen";
 import { MealDetailsScreen } from "../App/screens/Home/MealDetailsScreen";
 
@@ -46,6 +49,12 @@ export default function Routes() {
           />
 
           <Stack.Screen
+            name="PasswordRecovery"
+            component={PasswordRecoveryFlow}
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
             name="NewWorkout"
             component={NewWorkoutScreen}
             options={{ headerShown: false }}
@@ -53,7 +62,7 @@ export default function Routes() {
 
           <Stack.Screen
             name="NewMeal"
-            component={newMealScreen}
+            component={NewMealScreen}
             options={{ headerShown: false }}
           />
 
@@ -74,7 +83,16 @@ export default function Routes() {
             component={CameraScreen}
             options={{ headerShown: false }}
           />
-
+          <Stack.Screen
+            name="Workout"
+            component={WorkoutScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Meal"
+            component={MealTabScreen}
+            options={{ headerShown: false }}
+          />
           <Stack.Screen
             name="Settings"
             component={SettingsScreen}
