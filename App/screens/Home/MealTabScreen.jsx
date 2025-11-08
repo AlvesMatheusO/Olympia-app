@@ -25,7 +25,7 @@ export const MealTabScreen = ({ navigation }) => {
   const [meals, setMeals] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedPeriod, setSelectedPeriod] = useState("café"); // 👈 período inicial
+  const [selectedPeriod, setSelectedPeriod] = useState("geral"); // 👈 começa no modo geral
 
   useEffect(() => {
     const fetchMeals = async () => {
@@ -49,7 +49,6 @@ export const MealTabScreen = ({ navigation }) => {
 
         const data = await response.json();
 
-        // Normaliza os dados e mantém somente refeição
         const normalizedData = data.results
           .map((item) => {
             const type = item.tipo || item.tipo_feed;
@@ -82,10 +81,11 @@ export const MealTabScreen = ({ navigation }) => {
     }
   }, [accessToken, signOut]);
 
-  // 🔍 Filtra localmente conforme o período selecionado
-  const filteredMeals = meals.filter((m) =>
-    m.subtype?.includes(selectedPeriod)
-  );
+  // 🔍 Filtragem dinâmica (agora com "geral")
+  const filteredMeals =
+    selectedPeriod === "geral"
+      ? meals // mostra tudo
+      : meals.filter((m) => m.subtype?.includes(selectedPeriod));
 
   const totalCalories = filteredMeals.reduce(
     (sum, meal) => sum + Number(meal.calories || 0),
@@ -127,6 +127,7 @@ export const MealTabScreen = ({ navigation }) => {
 
   // 🧭 Botões de filtro
   const periods = [
+    { label: "Geral", key: "geral" },
     { label: "Café", key: "café" },
     { label: "Almoço", key: "almoço" },
     { label: "Jantar", key: "jantar" },
@@ -164,7 +165,9 @@ export const MealTabScreen = ({ navigation }) => {
         <View style={styles.headerCard}>
           <Text style={styles.calorieNumber}>{totalCalories}</Text>
           <Text style={styles.calorieLabel}>
-            Calorias consumidas no {selectedPeriod}
+            {selectedPeriod === "geral"
+              ? "Calorias totais consumidas hoje"
+              : `Calorias no ${selectedPeriod}`}
           </Text>
         </View>
         {renderContent()}
@@ -197,14 +200,16 @@ const styles = StyleSheet.create({
   filterRow: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginTop: 40,
+    marginTop: 60,
     marginBottom: 16,
+    flexWrap: "wrap",
   },
   filterButton: {
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 12,
     backgroundColor: "#1a1f2e",
+    marginVertical: 4,
   },
   filterButtonActive: {
     backgroundColor: "#4ade80",
