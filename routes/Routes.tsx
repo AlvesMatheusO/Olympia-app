@@ -6,6 +6,7 @@ import React from "react"; // Necessário para JSX
 //Screens:
 import { LoginScreen } from "../App/screens/Auth/LoginScreen";
 import { RegisterScreen } from "../App/screens/Auth/RegisterScreen";
+import PasswordRecoveryFlow from "../App/screens/Auth/ForgotPassword";
 import { SettingsScreen } from "../App/screens/Settings/SettingsScreen";
 import BottomTabContainer from "../App/navigation/BottomTabNavigation";
 import { NewWorkoutScreen } from "../App/screens/Home/NewWorkout";
@@ -44,6 +45,12 @@ export default function Routes() {
           <Stack.Screen
             name="Home" // Esta é a rota para onde o Login vai redirecionar
             component={BottomTabContainer}
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
+            name="PasswordRecovery"
+            component={PasswordRecoveryFlow}
             options={{ headerShown: false }}
           />
 

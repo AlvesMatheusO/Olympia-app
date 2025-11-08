@@ -108,7 +108,7 @@ export const LoginScreen = () => {
 
             <View style={{ height: 40 }} />
 
-            <TouchableOpacity style={styles.forgotPassword}>
+            <TouchableOpacity style={styles.forgotPassword} onPress={() => navigation.navigate("PasswordRecovery")}>
               <Text style={{ color: "white" }}>Esqueceu a senha?</Text>
             </TouchableOpacity>
 
