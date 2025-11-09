@@ -13,13 +13,12 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 // 1. Importar o hook de autenticação
-import { useAuth } from "../../../contexts/auth/AuthContext"; // (Ajuste o caminho se necessário)
+import { useAuth, API_BASE_URL } from "../../../contexts/auth/AuthContext"; // (Ajuste o caminho se necessário)
 
 import AddRecordBtn from "../../components/button/AddRecordBtn";
 import MealCard from "../../components/card/MealCard";
 import WorkoutCard from "../../components/card/WorkoutCard";
 
-const API_URL = "https://tqqtsjl1-8000.brs.devtunnels.ms/api/feed/";
 
 // Adicione a prop 'navigation' se estiver usando TypeScript
 // (ex: export const HomeScreen = ({ navigation }: { navigation: any }) => {)
@@ -51,7 +50,7 @@ export const HomeScreen = ({ navigation }) => {
         };
 
         // 5. Fazer a requisição com as opções
-        const response = await fetch(API_URL, options);
+        const response = await fetch(`${API_BASE_URL}api/feed/`, options);
 
         // 6. Tratar resposta não autorizada (token expirado/inválido)
         if (!response.ok) {
