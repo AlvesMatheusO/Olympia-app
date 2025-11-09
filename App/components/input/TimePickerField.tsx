@@ -9,12 +9,18 @@ import {
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Ionicons } from "@expo/vector-icons";
 
-const TimePickerField = ({ label = "Horário", value, onChange }) => {
+// 1. Adicionar 'themeVariant' às props
+const TimePickerField = ({
+  label = "Horário",
+  value,
+  onChange,
+  themeVariant = "light",
+}) => {
   const [showPicker, setShowPicker] = useState(false);
 
   const onChangeTime = (event, selectedTime) => {
     setShowPicker(false);
-    if (selectedTime) onChange(selectedTime);
+    if (selectedTime) onChange(event, selectedTime); // Passa os dois argumentos
   };
 
   const formattedTime = value
@@ -27,7 +33,7 @@ const TimePickerField = ({ label = "Horário", value, onChange }) => {
 
       <TouchableOpacity
         style={styles.inputContainer}
-        onPress={() => setShowPicker(true)}
+        onPress={() => setShowPicker(!showPicker)} // <-- 2. CORREÇÃO DO TOGGLE
       >
         <Ionicons name="time-outline" size={20} color="#333" />
         <Text style={styles.inputText}>{formattedTime}</Text>
@@ -40,6 +46,13 @@ const TimePickerField = ({ label = "Horário", value, onChange }) => {
           display={Platform.OS === "ios" ? "spinner" : "default"}
           is24Hour={true}
           onChange={onChangeTime}
+          // --- 3. CORREÇÃO DA COR (iOS e Android) ---
+          textColor={
+            Platform.OS === "ios" && themeVariant === "dark"
+              ? "#FFFFFF" // Branco
+              : "#FFFFFF"// Preto
+          }
+          themeVariant={themeVariant}
         />
       )}
     </View>
@@ -54,6 +67,8 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     marginBottom: 4,
+    paddingRight: 8, // (Estilo de 'DatePickerField')
+    paddingBottom: 4, // (Estilo de 'DatePickerField')
   },
   inputContainer: {
     backgroundColor: "#EDEDED",
@@ -61,7 +76,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 10,
     paddingLeft: 16,
-    height: 40,
+    height: 48, // <-- Padronizado com 'DatePickerField'
   },
   inputText: {
     color: "#000",
