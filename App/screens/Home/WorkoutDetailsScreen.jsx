@@ -6,6 +6,7 @@ import Topbar from "../../components/topbar/Topbar";
 export const WorkoutDetailsScreen = ({ navigation }) => {
   const route = useRoute();
   const { item } = route.params;
+  console.log(item)
 
   return (
     <View style={styles.container}>

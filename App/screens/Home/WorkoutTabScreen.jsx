@@ -12,9 +12,7 @@ import AddRecordBtn from "../../components/button/AddRecordBtn";
 import WeekCalendar from "../../components/calendar/WeekCalendar";
 import WorkoutCard from "../../components/card/WorkoutCard";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { useAuth } from "../../../contexts/auth/AuthContext";
-
-const API_URL = "https://tqqtsjl1-8000.brs.devtunnels.ms/api/feed/";
+import { useAuth, API_BASE_URL } from "../../../contexts/auth/AuthContext";
 
 export const WorkoutScreen = ({ navigation }) => {
   const { theme } = useContext(ThemeContext);
@@ -23,11 +21,15 @@ export const WorkoutScreen = ({ navigation }) => {
   const { accessToken, signOut } = useAuth();
 
   const [feedData, setFeedData] = useState([]);
+  // 1. Adicionar novo estado para os dias da semana
+  const [trainedDays, setTrainedDays] = useState([]); 
+  
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchFeed = async () => {
+    // 2. Renomear a função para refletir que ela busca todos os dados da tela
+    const fetchScreenData = async () => {
       try {
         const options = {
           method: "GET",
@@ -37,20 +39,29 @@ export const WorkoutScreen = ({ navigation }) => {
           },
         };
 
-        const response = await fetch(API_URL, options);
+        // 3. Preparar as duas chamadas de API
+        const feedPromise = fetch(`${API_BASE_URL}api/feed/workouts/`, options);
+        
+        // ❗ ATENÇÃO: Confirme se esta é a URL correta do seu endpoint no urls.py
+        const calendarPromise = fetch(`${API_BASE_URL}api/calendar/weekly/`, options);
 
-        if (!response.ok) {
-          if (response.status === 401) {
+        // 4. Executar as duas requisições em paralelo
+        const [feedResponse, calendarResponse] = await Promise.all([
+          feedPromise,
+          calendarPromise,
+        ]);
+
+        // --- Processamento do Feed (Lógica existente) ---
+        if (!feedResponse.ok) {
+          if (feedResponse.status === 401) {
             signOut();
             throw new Error("Sessão expirada. Faça login novamente.");
           }
           throw new Error("Erro ao buscar dados do feed.");
         }
-
-        const data = await response.json();
-
-        // Normaliza os dados e filtra apenas treinos
-        const normalizedData = data.results
+        
+        const feedJson = await feedResponse.json();
+        const normalizedData = feedJson.results
           .map((item) => {
             const type = item.tipo || item.tipo_feed;
             return {
@@ -64,9 +75,28 @@ export const WorkoutScreen = ({ navigation }) => {
               duration: item.duracao || "N/A",
             };
           })
-          .filter((item) => item.type?.toLowerCase() === "treino"); // 🔥 filtro só treinos
+          .filter((item) => item.type?.toLowerCase() === "treino");
 
         setFeedData(normalizedData);
+
+        // --- Processamento do Calendário (Nova lógica) ---
+        if (!calendarResponse.ok) {
+           // Se o feed falhou, já teremos saído no 'throw' acima
+           // Mas se só o calendário falhar (ex: 401), deslogamos também
+          if (calendarResponse.status === 401) {
+            signOut();
+            throw new Error("Sessão expirada. Faça login novamente.");
+          }
+          // Se não for 401, apenas logamos o erro, mas a tela pode continuar
+          console.error("Erro ao buscar dados do calendário.");
+          // Lançar erro aqui opcionalmente, se o calendário for crítico
+          // throw new Error("Erro ao buscar dados do calendário.");
+        } else {
+            const calendarData = await calendarResponse.json();
+            // A API já retorna ["Seg", "Qua", "Sex"], então é só salvar
+            setTrainedDays(calendarData);
+        }
+
       } catch (e) {
         console.error("Erro ao buscar dados:", e);
         setError(e.message);
@@ -76,7 +106,7 @@ export const WorkoutScreen = ({ navigation }) => {
     };
 
     if (accessToken) {
-      fetchFeed();
+      fetchScreenData(); // 5. Chamar a função atualizada
     } else {
       setIsLoading(false);
       if (signOut) signOut();
@@ -131,7 +161,9 @@ export const WorkoutScreen = ({ navigation }) => {
       style={[styles.container, { backgroundColor: currentTheme.background }]}
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <WeekCalendar checkedDays={["Seg", "Qua", "Sex"]} />
+        {/* 6. Passar o estado dinâmico para o componente */}
+        <WeekCalendar checkedDays={trainedDays} />
+        
         <View style={styles.header}>
           <Text style={styles.title}>Seu treino de hoje!</Text>
         </View>

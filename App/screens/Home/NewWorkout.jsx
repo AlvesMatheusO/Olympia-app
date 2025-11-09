@@ -38,7 +38,7 @@ export const NewWorkoutScreen = ({ navigation }) => {
     duration: "", // NOVO CAMPO
     description: "",
     workoutDate: new Date(),
-    workoutDateFormatted: "",
+    // workoutDateFormatted: "", // <-- REMOVIDO, não é necessário
     image: imageUri,
   });
 
@@ -57,11 +57,13 @@ export const NewWorkoutScreen = ({ navigation }) => {
   const { showSuccess, showError, showInfo } = useToast();
   const isDark = theme === "dark";
 
-  const handleDateChange = (event, selectedDate) => {
+  // --- CORREÇÃO 1: Assinatura da função ---
+  // A função agora espera apenas 1 argumento (selectedDate),
+  // que é o que o DatePickerField envia.
+  const handleDateChange = (selectedDate) => {
     if (selectedDate) {
-      const formattedDate = selectedDate.toLocaleDateString("pt-BR");
       setField("workoutDate", selectedDate);
-      setField("workoutDateFormatted", formattedDate);
+      // Não precisamos mais do 'workoutDateFormatted'
     }
   };
 
@@ -96,9 +98,9 @@ export const NewWorkoutScreen = ({ navigation }) => {
       const match = /\.(\w+)$/.exec(filename);
       const type = match ? `image/${match[1]}` : `image/jpeg`;
 
-      // 'image' deve ser o nome do campo no seu model/serializer Django
-      data.append("image", {
-        uri: imageUri,
+      // --- CORREÇÃO 3: O backend espera 'imgField' e o URI precisa de ajuste no iOS
+      data.append("imgField", {
+        uri: Platform.OS === "ios" ? imageUri.replace("file://", "") : imageUri,
         name: filename,
         type: type,
       });
@@ -164,7 +166,8 @@ export const NewWorkoutScreen = ({ navigation }) => {
             label="Data de Treino"
             value={formData.workoutDate}
             maximumDate={new Date()}
-            onChange={handleDateChange}
+            onChange={handleDateChange} // <-- Agora a assinatura bate (1 arg)
+            themeVariant={theme} // <-- CORREÇÃO 2: Passando o tema
           />
 
           {/* Categoria */}
