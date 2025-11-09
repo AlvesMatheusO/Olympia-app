@@ -194,7 +194,8 @@ export const NewMealScreen = ({ navigation }) => {
           <TimePickerField
             label="Horário da Refeição"
             value={mealTime}
-            onChange={(event, time) => time && setMealTime(time)} // Simplificado
+            onChange={(event, time) => time && setMealTime(time)}
+            themeVariant={theme} // <-- CORREÇÃO: Passar o tema aqui
           />
 
           {/* Calorias */}

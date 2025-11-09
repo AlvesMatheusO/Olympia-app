@@ -6,7 +6,7 @@ import Topbar from "../../components/topbar/Topbar";
 export const MealDetailsScreen = ({ navigation }) => {
   const route = useRoute();
   const { item } = route.params;
-
+  console.log(item)
   return (
     <View style={styles.container}>
       <Topbar navigation={navigation} title="Detalhes da Refeição" />

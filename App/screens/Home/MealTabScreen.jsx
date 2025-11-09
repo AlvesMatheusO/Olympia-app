@@ -10,11 +10,9 @@ import {
 import { ThemeContext } from "../../../contexts/ui/ThemeContext";
 import { lightTheme, darkTheme } from "../../theme/theme";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { useAuth } from "../../../contexts/auth/AuthContext";
+import { useAuth, API_BASE_URL } from "../../../contexts/auth/AuthContext";
 import MealCard from "../../components/card/MealCard";
 import AddRecordBtn from "../../components/button/AddRecordBtn";
-
-const API_URL = "https://tqqtsjl1-8000.brs.devtunnels.ms/api/feed/";
 
 export const MealTabScreen = ({ navigation }) => {
   const { theme } = useContext(ThemeContext);
@@ -38,7 +36,7 @@ export const MealTabScreen = ({ navigation }) => {
           },
         };
 
-        const response = await fetch(API_URL, options);
+        const response = await fetch(`${API_BASE_URL}api/feed/meals/`, options);
         if (!response.ok) {
           if (response.status === 401) {
             signOut();
@@ -48,10 +46,12 @@ export const MealTabScreen = ({ navigation }) => {
         }
 
         const data = await response.json();
+        console.log(data)
 
         const normalizedData = data.results
           .map((item) => {
             const type = item.tipo || item.tipo_feed;
+            console.log("URL:" + item.url_completa)
             return {
               id: item.id,
               type,
@@ -81,11 +81,15 @@ export const MealTabScreen = ({ navigation }) => {
     }
   }, [accessToken, signOut]);
 
-  // 🔍 Filtragem dinâmica (agora com "geral")
+  // 🔍 *** CORREÇÃO AQUI ***
+  // Modificado para filtrar pelo 'title' (ex: "Café da Manhã")
+  // e não pelo 'subtype' que estava vazio.
   const filteredMeals =
     selectedPeriod === "geral"
       ? meals // mostra tudo
-      : meals.filter((m) => m.subtype?.includes(selectedPeriod));
+      : meals.filter((m) =>
+          m.title.toLowerCase().includes(selectedPeriod)
+        );
 
   const totalCalories = filteredMeals.reduce(
     (sum, meal) => sum + Number(meal.calories || 0),
@@ -116,16 +120,18 @@ export const MealTabScreen = ({ navigation }) => {
         </Text>
       );
 
-    return filteredMeals.map((meal) => (
+    return filteredMeals.map((item) => (
       <MealCard
-        key={meal.id}
-        {...meal}
-        onPress={() => navigation.navigate("MealDetails", { meal })}
+        key={item.id}
+        {...item}
+        onPress={() => navigation.navigate("MealDetails", { item })}
       />
     ));
   };
 
   // 🧭 Botões de filtro
+  // As chaves (key) devem corresponder ao que esperamos no filtro
+  // ex: "café" está contido em "café da manhã" (que vem do m.title.toLowerCase())
   const periods = [
     { label: "Geral", key: "geral" },
     { label: "Café", key: "café" },
