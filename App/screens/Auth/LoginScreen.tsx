@@ -21,6 +21,7 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 // 3. Importar o hook de autenticação
 import { useAuth } from "../../../contexts/auth/AuthContext"; // (Ajuste o caminho se necessário)
+import { useToast } from "../../hooks/useToast";
 
 import Button from "../../components/button/Button";
 import PasswordInput from "../../components/input/PasswordInput";
@@ -32,6 +33,8 @@ export const LoginScreen = () => {
   // 4. Pegar a função signIn do contexto
   const { signIn } = useAuth();
 
+  const { showError } = useToast();
+
   // 5. Mudar 'email' para 'username' (pois nossa API espera 'username')
   //    e adicionar o estado de 'isLoading'
   const [username, setUsername] = useState("");
@@ -41,20 +44,24 @@ export const LoginScreen = () => {
   // 6. Criar a função de login
   const handleLogin = async () => {
     if (!username || !password) {
-      Alert.alert("Erro", "Por favor, preencha o usuário e a senha.");
+      // 4. Trocar Alert por showError
+      showError("Erro", "Por favor, preencha o usuário e a senha.");
       return;
     }
 
     setIsLoading(true);
-    const success = await signIn(username, password);
-    setIsLoading(false);
 
-    if (success) {
-      // Sucesso! Navega para a Home e substitui a tela de login
-      navigation.replace("Home");
-    } else {
-      // Falha! Mostra um alerta
-      Alert.alert("Erro de Login", "Usuário ou senha incorretos.");
+    try {
+      const success = await signIn(username, password);
+      if (success) {
+        navigation.replace("Home");
+      }
+    } catch (error) {
+      console.log("Erro ao tentar logar:", error);
+      // 5. Trocar Alert por showError
+      showError("Erro de Login", "Usuário ou senha incorretos.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -121,22 +128,25 @@ export const LoginScreen = () => {
 
             {/* 8. Lógica de Loading e Botão */}
             {isLoading ? (
-              <ActivityIndicator size="large" color="white" />
-            ) : (
+            <ActivityIndicator size="large" color="white" />
+          ) : (
+            // Usamos um Fragment <> para agrupar os dois
+            <> 
               <Button
                 title="Entrar"
                 color="black"
-                onPress={handleLogin} // MUDADO: Chama a função de login
-                // navigateTo="Home" (removido)
+                onPress={handleLogin}
               />
-            )}
 
-            <TouchableOpacity
-              style={styles.createAccount}
-              onPress={() => navigation.navigate("Register")} // OK
-            >
-              <Text style={styles.createAccText}>Criar conta</Text>
-            </TouchableOpacity>
+              {/* O "Criar conta" agora está DENTRO do "else" */}
+              <TouchableOpacity
+                style={styles.createAccount}
+                onPress={() => navigation.navigate("Register")}
+              >
+                <Text style={styles.createAccText}>Criar conta</Text>
+              </TouchableOpacity>
+            </>
+          )}
           </View>
         </LinearGradient>
       </KeyboardAvoidingView>

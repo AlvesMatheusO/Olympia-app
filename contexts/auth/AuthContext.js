@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
           setRefreshToken(storedRefresh);
         }
       } catch (e) {
-        console.error("Failed to load tokens from storage", e);
+        console.log("Failed to load tokens from storage", e);
       } finally {
         setIsLoading(false);
       }
