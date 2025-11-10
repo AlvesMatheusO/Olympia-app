@@ -10,6 +10,7 @@ import {
   Platform,
   Alert, // 1. Importar Alert
   ActivityIndicator, // 2. Importar ActivityIndicator
+  Image,
 } from "react-native";
 
 import { LinearGradient } from "expo-linear-gradient";
@@ -69,7 +70,11 @@ export const LoginScreen = () => {
       >
         {/* Topo */}
         <View style={styles.logoContainer}>
-          <Text style={styles.logo}>{"<LOGO/>"}</Text>
+          <Image
+            source={require("../../../assets/Logo.png")}
+            style={styles.logoImage}
+            resizeMode="contain"
+          />
         </View>
 
         <LinearGradient
@@ -151,12 +156,12 @@ const styles = StyleSheet.create({
   logoContainer: {
     alignItems: "center",
     justifyContent: "center",
-    height: 100,
+    height: 150,
   },
 
   logo: {
     fontWeight: "700",
-    fontSize: 30,
+    fontSize: 50,
   },
 
   inputWrapper: {
@@ -206,5 +211,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: "#fff",
+  },
+  // ADICIONE este estilo para a imagem do logo
+  logoImage: {
+    width: 200,
+    height: 200,
   },
 });

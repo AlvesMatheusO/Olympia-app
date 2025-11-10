@@ -26,9 +26,12 @@ import DatePickerField from "../../components/input/DatePickerField";
 // Importar o hook de autenticação
 import { useAuth } from "../../../contexts/auth/AuthContext";
 
+import { useToast } from "../../hooks/useToast"; 
+
 export const RegisterScreen = ({ navigation }) => {
-  // Pegar a função signUp do contexto
   const { signUp } = useAuth();
+  // 2. INICIALIZAR O HOOK
+  const { showSuccess, showError, showInfo } = useToast();
 
   // Estados dos campos
   const [name, setName] = useState("");
@@ -88,30 +91,23 @@ export const RegisterScreen = ({ navigation }) => {
 
   // Função de handler para o botão de registro
   const handleRegister = async () => {
-    // 1. Validação básica
+    // 1. Validação básica (agora usando seu hook)
     if (password !== confirmPass) {
-      Alert.alert("Erro", "As senhas não coincidem.");
+      // 3. SUBSTITUÍDO
+      showError("Erro", "As senhas não coincidem.");
       return;
     }
     if (
-      !name ||
-      !email ||
-      !password ||
-      !atleteLevel ||
-      !height ||
-      !actualWeight ||
-      !goalWeight ||
-      !goal ||
-      !sport ||
-      !frequency
+      !name || !email || !password || !atleteLevel || !height ||
+      !actualWeight || !goalWeight || !goal || !sport || !frequency
     ) {
-      Alert.alert("Erro", "Por favor, preencha todos os campos.");
+      // 4. SUBSTITUÍDO
+      showError("Erro", "Por favor, preencha todos os campos.");
       return;
     }
 
     // 2. Iniciar o loading
     setIsLoading(true);
-    setError(null);
 
     // 3. Montar os DOIS objetos de dados
 
@@ -124,8 +120,8 @@ export const RegisterScreen = ({ navigation }) => {
 
       // Dados Pessoais do Usuário
       nome: name,
-      birth_date: formatISODate(birthDate),
-      height_cm: parseFloat(height.replace(",", ".")),
+      data_nascimento: formatISODate(birthDate),
+      altura: parseFloat(height.replace(",", ".")),
     };
 
     // --- Objeto 2: Dados da Meta (para /api/metas/) ---
@@ -158,22 +154,38 @@ export const RegisterScreen = ({ navigation }) => {
 
     // 4. Chamar a função signUp (agora atualizada)
     try {
-      // Passamos os dois objetos para o Contexto
-      const success = await signUp(userRegistrationData, userGoalData);
+      const result = await signUp(userRegistrationData, userGoalData);
 
-      setIsLoading(false); // Parar o loading
+      // 4. Parar o loading ANTES de mostrar o Toast
+      setIsLoading(false);
 
-      if (success) {
-        // O signUp cuidou do login e da criação da meta
-        console.log("Processo de Registro Completo! Navegando para Home...");
-        navigation.navigate("Home");
-      } else {
-        // O erro já deve ter sido exibido pelo Alert dentro do signUp
-        console.log("Falha no processo de registro.");
+      if (result.success) {
+        
+        // 5. VERIFICAR O TIPO DE SUCESSO
+        if (result.warning) {
+          // SUCESSO PARCIAL (Meta falhou)
+          showInfo("Aviso", result.warning);
+          
+          // Esperar 3s para o usuário ler o aviso antes de navegar
+          setTimeout(() => {
+            navigation.navigate("Home");
+          }, 3000);
+
+        } else {
+          // SUCESSO TOTAL (Tudo certo)
+          showSuccess("Conta criada!", "Seja bem-vindo(a)!");
+          
+          // Esperar 1.5s (mais rápido) antes de navegar
+          setTimeout(() => {
+            navigation.navigate("Home");
+          }, 1500);
+        }
+        
       }
+
     } catch (e) {
       setIsLoading(false);
-      Alert.alert("Erro Inesperado", "Ocorreu um erro: " + e.message);
+      showError("Erro no Cadastro", e.message || "Ocorreu um erro inesperado.");
     }
   };
 
@@ -265,6 +277,7 @@ export const RegisterScreen = ({ navigation }) => {
                     autoCapitalize="none"
                     onChangeText={setPassword}
                     value={password}
+                    textContentType="oneTimeCode"
                   />
                 </View>
               </View>
@@ -279,6 +292,7 @@ export const RegisterScreen = ({ navigation }) => {
                     autoCapitalize="none"
                     onChangeText={setConfirmPass}
                     value={confirmPass}
+                    textContentType="oneTimeCode"
                   />
                 </View>
               </View>

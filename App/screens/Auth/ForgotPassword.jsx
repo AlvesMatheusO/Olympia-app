@@ -17,6 +17,8 @@ import { useNavigation } from "@react-navigation/native";
 // Importar a URL da API do seu AuthContext
 import { API_BASE_URL } from "../../../contexts/auth/AuthContext";
 
+import { useToast } from "../../hooks/useToast";
+
 // --- COMPONENTES DA TELA MOVIDOS PARA FORA ---
 
 // Tela 1: Solicitar Email
@@ -308,6 +310,8 @@ const SuccessScreen = ({ onGoToLogin }) => (
 export default function PasswordRecoveryFlow() {
   const navigation = useNavigation();
 
+  const { showSuccess, showError, showInfo } = useToast();
+
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
   const [code, setCode] = useState(["", "", "", "", "", ""]);
@@ -321,7 +325,7 @@ export default function PasswordRecoveryFlow() {
   // 1. Enviar o email para o backend
   const handleSendCode = async () => {
     if (!email) {
-      Alert.alert("Erro", "Por favor, insira seu e-mail.");
+      showError("Erro", "Por favor, insira seu e-mail.");
       return; // Não continuar
     }
     setIsLoading(true);
@@ -335,18 +339,18 @@ export default function PasswordRecoveryFlow() {
         }
       );
       if (response.ok) {
-        Alert.alert("Enviado!", "Código de verificação enviado para o seu e-mail.");
+        showSuccess("Enviado!", "Código de verificação enviado para o seu e-mail.");
         setStep(2); // Avançar para a tela de código
       } else {
         const errorData = await response.json();
-        Alert.alert(
+        showError(
           "Erro",
           errorData.error || "Não foi possível encontrar uma conta com esse e-mail."
         );
       }
     } catch (e) {
       console.error(e);
-      Alert.alert("Erro de Rede", "Não foi possível conectar ao servidor.");
+      showError("Erro de Rede", "Não foi possível conectar ao servidor.");
     } finally {
       setIsLoading(false);
     }
@@ -356,7 +360,7 @@ export default function PasswordRecoveryFlow() {
   const handleVerifyCode = async () => {
     const fullCode = code.join("");
     if (fullCode.length < 6) {
-      Alert.alert("Erro", "Por favor, preencha o código completo.");
+      showError("Erro", "Por favor, preencha o código completo.");
       return;
     }
     setIsLoading(true);
@@ -373,14 +377,15 @@ export default function PasswordRecoveryFlow() {
         }
       );
       if (response.ok) {
+        showSuccess("Código verificado!", "Agora crie sua nova senha.");
         setStep(3); // Sucesso! Avança para a tela de nova senha
       } else {
         const errorData = await response.json();
-        Alert.alert("Erro", errorData.detail || "Código inválido ou expirado.");
+        showError("Erro", errorData.detail || "Código inválido ou expirado.");
       }
     } catch (e) {
       console.error(e);
-      Alert.alert("Erro de Rede", "Não foi possível conectar ao servidor.");
+      showError("Erro de Rede", "Não foi possível conectar ao servidor.");
     } finally {
       setIsLoading(false);
     }
@@ -389,11 +394,11 @@ export default function PasswordRecoveryFlow() {
   // 3. Redefinir a senha
   const handleResetPassword = async () => {
     if (newPassword !== confirmPassword) {
-      Alert.alert("Erro", "As senhas não coincidem.");
+      showError("Erro", "As senhas não coincidem.");
       return;
     }
     if (newPassword.length < 8) {
-      Alert.alert("Erro", "A senha deve ter no mínimo 8 caracteres.");
+      showError("Erro", "A senha deve ter no mínimo 8 caracteres.");
       return;
     }
     // TODO: Adicionar mais validações de complexidade se desejar
@@ -417,11 +422,11 @@ export default function PasswordRecoveryFlow() {
         setStep(4); // Sucesso! Avança para a tela final
       } else {
         const errorData = await response.json();
-        Alert.alert("Erro", errorData.detail || "Não foi possível redefinir a senha.");
+        showError("Erro", errorData.detail || "Não foi possível redefinir a senha.");
       }
     } catch (e) {
       console.error(e);
-      Alert.alert("Erro de Rede", "Não foi possível conectar ao servidor.");
+      showError("Erro de Rede", "Não foi possível conectar ao servidor.");
     } finally {
       setIsLoading(false);
     }
