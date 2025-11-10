@@ -26,6 +26,18 @@ import Topbar from "../../components/topbar/Topbar";
 import { useAuth } from "../../../contexts/auth/AuthContext";
 import { API_BASE_URL } from "../../../contexts/auth/AuthContext";
 
+const formatISODate = (date) => {
+    const ano = date.getFullYear();
+    const mes = date.getMonth() + 1; // getMonth() é base 0, por isso +1
+    const dia = date.getDate();
+
+    // Formata com zero à esquerda
+    const mesFormatado = String(mes).padStart(2, '0');
+    const diaFormatado = String(dia).padStart(2, '0');
+
+    return `${ano}-${mesFormatado}-${diaFormatado}`;
+};
+
 export const NewWorkoutScreen = ({ navigation }) => {
   const route = useRoute();
   const { imageUri } = route.params || {};
@@ -87,10 +99,7 @@ export const NewWorkoutScreen = ({ navigation }) => {
     data.append("calorias_estimadas", formData.calories);
     data.append("duracao", formData.duration); // NOVO CAMPO
     data.append("descricao", formData.description);
-    data.append(
-      "data", // 'data' ao invés de 'workout_date'
-      formData.workoutDate.toISOString().split("T")[0]
-    ); // Formato YYYY-MM-DD
+    data.append("data", formatISODate(formData.workoutDate))
 
     // 2. Adicionar a imagem (se existir)
     if (imageUri) {

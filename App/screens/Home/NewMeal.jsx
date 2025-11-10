@@ -49,8 +49,19 @@ export const NewMealScreen = ({ navigation }) => {
   const { showSuccess, showError } = useToast();
 
   const formatISODate = (date) => {
-    return date.toISOString().split("T")[0];
-  };
+    // Pega os componentes locais da data
+    const ano = date.getFullYear();
+    // getMonth() começa do 0 (Jan=0), por isso +1
+    const mes = date.getMonth() + 1; 
+    const dia = date.getDate();
+
+    // Adiciona o '0' à esquerda se o mês/dia for menor que 10
+    const mesFormatado = String(mes).padStart(2, '0');
+    const diaFormatado = String(dia).padStart(2, '0');
+
+    // Retorna a string no formato YYYY-MM-DD
+    return `${ano}-${mesFormatado}-${diaFormatado}`;
+};
 
   // Pega HH:mm:ss do objeto Date
   const formatISOTime = (date) => {
